@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebRTC Mesh - Room</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">WebRTC Mesh</div>
+      <div id="roomInfo" class="muted"></div>
+      <div>
+        <button id="copyLink" class="btn">Copy Link</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="toggleMic" class="btn">Mute</button>
+      <button id="toggleCam" class="btn">Stop Video</button>
+      <button id="shareScreen" class="btn">Share Screen</button>
+      <button id="leave" class="btn danger">Leave</button>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <div id="grid" class="grid"></div>
+      </div>
+      <aside class="chat">
+        <div class="card" style="display:flex;flex-direction:column;height:100%">
+          <div id="messages" class="messages"></div>
+          <form id="chatForm">
+            <input id="chatInput" type="text" placeholder="Type a message..." />
+            <button class="btn" type="submit">Send</button>
+          </form>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Optional runtime config for production; set window.SIGNAL_URL to your server URL -->
+  <script src="/config.js"></script>
+  <!-- Socket.IO client from CDN for static hosting (Vercel) -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-i9Jc2G9kq0H7aJQv1oA8mK7qQ7M3h8Q8YbR2wJbYkY8l2Zkq7kCw5HnE3hZ4QHBs" crossorigin="anonymous"></script>
+  <script src="/room.js" type="module"></script>
+</body>
+</html>
