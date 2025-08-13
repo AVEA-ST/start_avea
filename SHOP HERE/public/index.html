@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebRTC Mesh - Home</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="container narrow">
+    <h1>WebRTC Mesh</h1>
+    <p class="muted">Minimal video conferencing app (up to 6 participants).</p>
+
+    <form id="createForm" class="card">
+      <h2>Create a room</h2>
+      <label class="row">
+        <span>Display name</span>
+        <input id="createName" type="text" placeholder="Your name" required />
+      </label>
+      <button class="btn primary" type="submit">Create & Join</button>
+    </form>
+
+    <form id="joinForm" class="card">
+      <h2>Join a room</h2>
+      <label class="row">
+        <span>Display name</span>
+        <input id="joinName" type="text" placeholder="Your name" required />
+      </label>
+      <label class="row">
+        <span>Room ID</span>
+        <input id="roomId" type="text" placeholder="e.g. 1234-5678" required />
+      </label>
+      <button class="btn" type="submit">Join</button>
+    </form>
+  </main>
+
+  <script>
+    function randomId() {
+      return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2,10);
+    }
+    function goToRoom(roomId, name) {
+      // Use same origin on Vercel; for local dev, visit http://localhost:3000
+      const u = new URL(window.location.origin + '/room/' + encodeURIComponent(roomId));
+      u.searchParams.set('name', name);
+      window.location.href = u.toString();
+    }
+    document.getElementById('createForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('createName').value.trim();
+      if (!name) return;
+      goToRoom(randomId(), name);
+    });
+    document.getElementById('joinForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('joinName').value.trim();
+      const id = document.getElementById('roomId').value.trim();
+      if (!name || !id) return;
+      goToRoom(id, name);
+    });
+  </script>
+</body>
+</html>
