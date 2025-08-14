@@ -128,6 +128,10 @@ function createPeerConnection(peerId) {
     if (!entry) return;
     const [stream] = e.streams;
     entry.videoEl.srcObject = stream;
+    // Attempt to start playback; some browsers require an explicit call
+    entry.videoEl.play().catch(() => {
+      // Autoplay might be blocked until user gesture; we'll try again on resume gesture
+    });
   };
 
   pc.onconnectionstatechange = () => {
@@ -294,6 +298,8 @@ leaveBtn.addEventListener('click', () => {
     const meVideo = addTile('me', displayName, true);
     localStream = await getCameraStream();
     meVideo.srcObject = localStream;
+    // Ensure local preview starts
+    meVideo.play().catch(() => {});
 
     // Join room
     socket.emit('join-room', { roomId, name: displayName });
@@ -302,3 +308,16 @@ leaveBtn.addEventListener('click', () => {
     console.error(e);
   }
 })();
+
+// As a fallback, attempt to resume any paused videos on first user interaction
+let resumed = false;
+function resumeAllVideosOnce() {
+  if (resumed) return;
+  resumed = true;
+  document.querySelectorAll('video').forEach((v) => {
+    v.play().catch(() => {});
+  });
+}
+['click', 'keydown', 'touchstart'].forEach((evt) => {
+  window.addEventListener(evt, resumeAllVideosOnce, { once: true, passive: true });
+});
