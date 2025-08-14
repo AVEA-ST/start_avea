@@ -42,8 +42,8 @@
 
   <!-- Optional runtime config for production; set window.SIGNAL_URL to your server URL -->
   <script src="/config.js"></script>
-  <!-- Socket.IO client from CDN for static hosting (Vercel) -->
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-i9Jc2G9kq0H7aJQv1oA8mK7qQ7M3h8Q8YbR2wJbYkY8l2Zkq7kCw5HnE3hZ4QHBs" crossorigin="anonymous"></script>
+  <!-- Use Socket.IO client served by our server to ensure version compatibility -->
+  <script src="/socket.io/socket.io.js"></script>
   <script src="/room.js" type="module"></script>
 </body>
 </html>
