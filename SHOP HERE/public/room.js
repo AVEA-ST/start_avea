@@ -179,7 +179,8 @@ socket.on('existing-peers', async ({ peers: existing }) => {
 socket.on('peer-joined', async ({ socketId, name }) => {
   if (peers.has(socketId)) return;
   if (peers.size >= MAX_PARTICIPANTS - 1) return;
-  await connectToPeer(socketId, true);
+  // Do NOT initiate here to avoid glare. The joining peer will initiate via 'existing-peers'.
+  await connectToPeer(socketId, false);
 });
 
 socket.on('peer-left', ({ socketId }) => {
@@ -197,12 +198,26 @@ socket.on('signal', async ({ from, data }) => {
   if (data.type === 'candidate' && data.candidate) {
     try { await pc.addIceCandidate(data.candidate); } catch {}
   } else if (data.type === 'offer') {
+    // If we're not stable, roll back local changes before applying the remote offer
+    if (pc.signalingState !== 'stable') {
+      try {
+        await pc.setLocalDescription({ type: 'rollback' });
+      } catch (e) {
+        console.warn('Rollback failed (may be harmless):', e);
+      }
+    }
     await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
     socket.emit('signal', { to: from, data: { type: 'answer', sdp: pc.localDescription } });
   } else if (data.type === 'answer') {
-    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+    // Only accept an answer if we are in the correct state
+    if (pc.signalingState === 'have-local-offer') {
+      await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+    } else {
+      // Ignore unexpected answer (likely due to glare or late message)
+      console.warn('Ignoring unexpected answer in state', pc.signalingState);
+    }
   }
 });
 
