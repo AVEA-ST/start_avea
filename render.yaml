@@ -2,6 +2,7 @@ services:
   - type: web
     name: webrtc-mesh
     env: node
+    rootDir: "SHOP HERE"
     plan: free
     autoDeploy: true
     buildCommand: npm install
