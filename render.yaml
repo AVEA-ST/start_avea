@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: webrtc-mesh
+    env: node
+    rootDir: "SHOP HERE"
+    plan: free
+    autoDeploy: true
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+    # Optional: pick a region close to you (commented out by default)
+    # region: oregon
